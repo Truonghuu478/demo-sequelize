@@ -1,0 +1,118 @@
+
+
+
+
+build + save = create // them table
+
+
+findAll : get all column on table
+findOne : get info a column
+
+
+
+
+const Task = sequelize.define("Task",
+    {
+        name: {
+            type: DataTypes.STRING, //   VARCHAR(255), loai du lieu
+            allowNull: false // ko cho null
+        },
+        status: {
+            type: DataTypes.STRING
+        }
+    })
+//c1
+const createTask = async (name, status) => {
+    const newTask = Task.build({
+        name,
+        status
+    })
+    await newTask.save()
+}
+// createTask("ReactJS","OPEN")
+// createTask("VueJS", "OPEN")
+
+// c2 
+const createTaskC2 = async (name, status) => {
+    await Task.create({
+        name, status
+    })
+    // ket hop gia build va save
+}
+// dong bo model
+// createTaskC2("js","PENNDING")
+const getAllTask = async () => {
+    const taskList = await Task.findAll();
+    return taskList 
+}
+// getAllTask()
+
+const getTaskById = async (id) => {
+    const task = await Task.findOne({
+        where: {
+            id
+        }
+    })
+    console.log("task : ", JSON.stringify(task, null, 2));
+}
+// getTaskById(2)
+
+const updateTaskById = async (data, id) => {
+   await Task.update(data, {
+        where: {
+            id
+        }
+    })
+}
+
+// updateTaskById({
+//     name: "hoc lap trinh html",
+//     status: "REJECT"
+// }, 1)
+
+
+const removeTaskById =async (id)=>{
+   await Task.destroy({
+        where:{
+            id
+        }
+    })
+}
+
+// removeTaskById(1)
+const asyncModel = async () => {
+    await Task.sync({
+        force: true // remove old table  va tao new table
+    })
+    // Task.sync({
+    //     alter: true // edit old table thanh  new table
+    // })
+    console.log("da dong bo stack model ");
+}
+// asyncModel()
+const checkConnectDatabase = async () => {
+    try {
+        await sequelize.authenticate()
+        console.log("connect successful");
+    } catch (error) {
+        console.log("errors" + error);
+
+    }
+}
+
+checkConnectDatabase()
+
+
+
+app.get('/task', cors(corsOptions), async function (_, res) {
+    try {
+        const result = await getAllTask()
+        res.status(200).send(
+            JSON.stringify(result, null, 2)
+        )
+      
+    } catch (error) {
+        res.status(500).send("Loi he Thong")
+    }
+   
+})
