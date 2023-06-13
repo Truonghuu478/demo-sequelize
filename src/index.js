@@ -1,16 +1,13 @@
 const express = require("express")
 const cors = require('cors');
-const rootRouter = require("./routers/rootRouter");
+const { sequelize } = require("./models")
 
-const PORT = 8080
+const rootRouter = require("./routers/rootRouter");
 const app = express()
-app.use(express.json())
-app.use(cors());
-app.use(express.static('.'))
+const PORT = 8080
 
 
 // set sequelize 
-const { sequelize } = require("./models")
 // đồng bộ 
 const checkConnectDatabase = async () => {
     try {
@@ -29,9 +26,20 @@ checkConnectDatabase()
 sequelize.sync({ alter: true })
 
 
+app.use((req,res,next)=>{
+    res.header('Access-Control-Allow-Origin', '*');
+    next()
+})
+
+app.use(express.json())
+app.use(cors());
+
+app.use(express.static('.'))
 
 app.use("/api", rootRouter)
 
 app.listen(PORT, () => {
     console.log("run localhost:" + PORT);
 })
+
+

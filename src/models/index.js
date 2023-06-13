@@ -1,5 +1,5 @@
 // @ts-nocheck
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const {DB,HOST,PASSWORD,USER,dialect} = require("../configs/db.config");
 const { createStuModel } = require("./student");
 
